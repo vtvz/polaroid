@@ -17,18 +17,18 @@ impl Mm {
     }
 }
 
-impl Add for Mm {
+impl Add<&Self> for Mm {
     type Output = Self;
 
-    fn add(self, rhs: Self) -> Self::Output {
+    fn add(self, rhs: &Self) -> Self::Output {
         Self(self.0 + rhs.0)
     }
 }
 
-impl Sub for Mm {
+impl Sub<&Self> for Mm {
     type Output = Self;
 
-    fn sub(self, rhs: Self) -> Self::Output {
+    fn sub(self, rhs: &Self) -> Self::Output {
         Self(self.0 - rhs.0)
     }
 }
@@ -45,11 +45,15 @@ impl<T> Size<T> {
 }
 
 impl Size<Mm> {
-    fn to_px(&self, dpi: usize) -> Size<usize> {
+    pub fn to_px(&self, dpi: usize) -> Size<usize> {
         Size {
             width: self.width.to_px(dpi),
             height: self.height.to_px(dpi),
         }
+    }
+
+    pub fn ratio(&self) -> f64 {
+        self.width.0 as f64 / self.height.0 as f64
     }
 }
 
@@ -59,6 +63,10 @@ impl Size<usize> {
             width: Mm::from_px(self.width, dpi),
             height: Mm::from_px(self.height, dpi),
         }
+    }
+
+    pub fn ratio(&self) -> f64 {
+        self.width as f64 / self.height as f64
     }
 }
 
