@@ -239,12 +239,15 @@ impl Polaroid {
         Ok(())
     }
 
-    pub fn write(mut self, path: &str) -> Result<()> {
+    pub fn write(mut self, path: &str, cmyk: bool) -> Result<()> {
         let density = format!("{0}x{0}", self.dpi);
         let wand = self.get_wand_mut()?;
 
         wand.set_image_property("density", &density)?;
-        wand.transform_image_colorspace(bindings::ColorspaceType_CMYKColorspace)?;
+
+        if cmyk {
+            wand.transform_image_colorspace(bindings::ColorspaceType_CMYKColorspace)?;
+        }
 
         wand.set_compression_quality(100)?;
         wand.set_image_compression_quality(100)?;

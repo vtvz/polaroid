@@ -1,6 +1,7 @@
 mod image;
 mod things;
 
+use anyhow::anyhow;
 use anyhow::Result;
 use clap::arg;
 use clap::Parser;
@@ -28,6 +29,9 @@ struct Cli {
 
     #[arg(long, short = 'f', default_value = "tif")]
     output_format: String,
+
+    #[arg(long, default_value = "false")]
+    cmyk: bool,
 }
 
 fn process_file(cli: &Cli, path: &PathBuf) -> Result<()> {
@@ -51,7 +55,12 @@ fn process_file(cli: &Cli, path: &PathBuf) -> Result<()> {
     polaroid.add_border()?;
     polaroid.add_frame()?;
     polaroid.add_output_filler()?;
-    polaroid.write(output_file.to_str().unwrap())?;
+    polaroid.write(
+        output_file
+            .to_str()
+            .ok_or_else(|| anyhow!("Cannot create a path"))?,
+        cli.cmyk,
+    )?;
 
     Ok(())
 }
